@@ -62,6 +62,21 @@
     <splash src="resources/android/splash/drawable-port-xxhdpi-screen.png" density="port-xxhdpi"/>
     <splash src="resources/android/splash/drawable-port-xxxhdpi-screen.png" density="port-xxxhdpi"/>
   </platform>
+  <platform name="windows">
+    <icon src="resources/windows/Square150x150Logo.scale-100.png" width="150" height="150" />
+    <icon src="resources/windowss/Square150x150Logo.scale-240.png" width="360" height="360" />
+    <icon src="resources/windows/Square30x30Logo.scale-100.png" width="30" height="30" />
+    <icon src="resources/windows/Square310x310Logo.scale-100.png" width="310" height="310" />
+    <icon src="resources/windows/Square44x44Logo.scale-100.png" width="44" height="44" />
+    <icon src="resources/windows/Square44x44Logo.scale-240.png" width="106" height="106" />
+    <icon src="resources/windows/Square70x70Logo.scale-100.png" width="70" height="70" />
+    <icon src="resources/windows/Square71x71Logo.scale-100.png" width="71" height="71" />
+    <icon src="resources/windows/Square71x71Logo.scale-240.png" width="170" height="170" />
+    <icon src="resources/windows/StoreLogo.scale-100.png" width="50" height="50" />
+    <icon src="resources/windows/StoreLogo.scale-240.png" width="120" height="120" />
+    <icon src="resources/windows/Wide310x150Logo.scale-100.png" width="310" height="150" />
+    <icon src="resources/windows/Wide310x150Logo.scale-240.png" width="744" height="360" />
+  </platform>
   <platform name="wp8">
     <icon src="resources/windows/Square30x30Logo.scale-100.png" width="30" height="30" />
     <icon src="resources/windows/Background.png" width="159" height="159" />
