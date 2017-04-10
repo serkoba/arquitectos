@@ -62,4 +62,9 @@
     <splash src="resources/android/splash/drawable-port-xxhdpi-screen.png" density="port-xxhdpi"/>
     <splash src="resources/android/splash/drawable-port-xxxhdpi-screen.png" density="port-xxxhdpi"/>
   </platform>
+  <platform name="wp8">
+    <icon src="resources/windows/Square30x30Logo.scale-100.png" width="30" height="30" />
+    <icon src="resources/windows/Background.png" width="159" height="159" />
+    <splash src="resources/windows/SplashScreenPhone.scale-240.png" width="1152" height="1920" />
+  </platform>
 </widget>
