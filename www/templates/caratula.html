@@ -1,0 +1,65 @@
+<ion-view view-title="Formulario de Caratula" cache-view="false">
+  <ion-nav-buttons side="primary">
+    <a class="button button-light icon-right ion-home" href="#/"></a>
+  </ion-nav-buttons>
+  <ion-content>
+    <form name="FormCaratula" novalidate>
+      <div class="list">        
+        <div class="item item-divider">Datos de Obra</div>
+
+        <label class="item item-input ">
+          <span class="input-label">Dirección de Obra</span>
+          <input type="text" required ng-model="FormCaratulaValues.direccion_obra">
+        </label>
+
+        <label class="item item-input ">
+          <span class="input-label">Localidad</span>
+          <input type="text" required ng-model="FormCaratulaValues.localidad_obra">
+        </label>
+
+
+        <label class="item item-input ">
+          <span class="input-label">N° de Expediente Municipal</span>
+          <input type="number" required ng-model="FormCaratulaValues.expediente_municipal">
+        </label>
+
+         <label class="item item-input ">
+          <span class="input-label">Municipalidad de</span>
+          <input type="text" required ng-model="FormCaratulaValues.municipalidad_obra">
+        </label>
+
+        <label class="item item-input ">
+          <span class="input-label">N° de Expdiente CAPBA</span>
+          <input type="number" required ng-model="FormCaratulaValues.expdiente_capba">
+        </label>
+
+        <label class="item item-input ">
+          <span class="input-label">Duración de Obra</span>
+          <input type="text" required ng-model="FormCaratulaValues.duracion">
+        </label>
+
+        <label class="item item-input ">
+          <span class="input-label">Superficie cubiera de Obra (m2)</span>
+          <input type="number" required ng-model="FormCaratulaValues.superficie">
+        </label>
+
+        <label class="item item-input ">
+          <span class="input-label">Superficie semicubiera de Obra (m2)</span>
+          <input type="number" required ng-model="FormCaratulaValues.superficie_semi">
+        </label>
+
+        <div class="item item-divider">Tipo de tarea profesional</div>
+
+          <label class="item item-input ">
+            <ion-list>
+              <ion-checkbox ng-model="FormTarea.proyecto" >Proyecto</ion-checkbox>
+              <ion-checkbox ng-model="FormTarea.direccion_tarea">Dirección</ion-checkbox>
+              <ion-checkbox ng-model="FormTarea.direccion_ejecutiva">Dirección Ejectuiva</ion-checkbox>
+              <ion-checkbox ng-model="FormTarea.representacion_tecnica">Representación técnica</ion-checkbox>
+            </ion-list>
+          </label>
+        <button class="button button-full"  ng-class="FormCaratula.$valid ? 'button-balanced' : 'button-assertive'" ng-click="ProcesarCaratula()" ng-disabled="FormCaratula.$invalid" >Guardar</button>
+      </div>
+    </form>
+  </ion-content>
+</ion-view>

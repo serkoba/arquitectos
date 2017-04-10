@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title></title>
+    <link rel="manifest" href="manifest.json">
+    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+    <script src="lib/ngCordova/dist/ng-cordova.min.js"></script>
+    <script src="cordova.js"></script>
+    <script src="js/pdf.compat.js"></script>
+    <script src='js/pdf.js'></script>
+    <script src="js/ng-pdfviewer.js"></script>
+    <script src='js/pdfmake.min.js'></script>
+    <script src='js/vfs_fonts.js'></script>
+    <script src='js/angular-pdf.min.js'></script>
+    <script src="js/wSQL.config.js"></script>
+    <script src="js/wSQL.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/factory.js"></script>
+    <script src="js/app.js"></script>
+    <style type="text/css">
+    .pdf-controls { width: 100%; display: block; background: #eee;}
+
+    .fixed { position: fixed; top: 0; left: calc(50% - 480px); z-index: 100; width: 100%; padding: 1em; background: rgba(238, 238, 238,.9); width: 960px; }
+
+    .bar.bar-positive{
+    	background-color:#00728F;
+        border-color:#00728F;
+    }
+
+    .button.button-positive{
+    	background-color:#00728F;
+        border-color:#00728F;
+
+    }
+
+    .button.button-positive.activated{
+    	background-color:#00728F;
+    	border-color: #fff
+    }
+
+
+    .borrar{
+    	display: none;
+    }
+    .button.button-balanced{
+    	background-color:#00728F;
+    }
+    .ion-close-round{
+    	color:#ff4e4e;
+    }
+    .ion-checkmark-round{
+    	color:#00728f;
+    }
+    .item-icon-left .icon, .item-icon-right .icon{
+    	font-size: 20px
+    }
+    .item-icon-left .icon {
+    	left: 5px;
+	}
+	.item-complex.item-icon-left .item-content {
+    	padding-left: 40px;
+	}
+	.button.button-assertive
+	{
+		background-color:#780001
+	}
+    </style>
+  </head>
+  <body ng-app="colegio_arquitectos" class="platform-windows">
+    <ion-pane>
+     <ion-nav-bar class="bar-positive" align-title="center">
+       <ion-nav-back-button class="button-clear"><i class="ion-arrow-left-c"></i> Volver</ion-nav-back-button>
+     </ion-nav-bar>
+
+      <ion-nav-view></ion-nav-view>
+    </ion-pane>
+  </body>
+</html>

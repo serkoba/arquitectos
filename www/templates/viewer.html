@@ -1,0 +1,12 @@
+<nav ng-class="{'pdf-controls fixed': scroll > 100, 'pdf-controls': scroll <= 100}" style="text-align:center;padding: 0px;margin-bottom: 0px;">
+	<!--<button ng-click="zoomIn()" class="button icon-left ion-plus-circled button-clear button-dark"></button>-->
+	<!--<button ng-click="fit()" class="button icon-left ion-arrow-expand  button-clear button-dark"></button>-->
+	<!--<button ng-click="zoomOut()" class="button icon-left ion-minus-circled button-clear button-dark"></button>-->
+	<button ng-click="goPrevious()" class="icon-left button button-icon ion-chevron-left button-clear button-dark"></button>
+	<button class="icon-left button button-clear button-icon button-dark">{{pageNum}}/{{pageCount}}</button>
+	<button ng-click="goNext()" class="icon-left button button-icon ion-chevron-right button-clear button-dark"></button>
+	<button ng-click="enviarPDF()" class="icon-left button button-icon ion-paper-airplane button-clear button-dark"></button>
+</nav>
+<ion-scroll max-zoom="5" overflow-scroll="false" zooming="true" direction="xy" style="width: 100%; height:100%;margin-top: 0px;padding: 0px;" scrollbar-x=false; scrollbar-y = false;>
+    <canvas class="padding" id="pdf" class="rotate0"></canvas>
+</ion-scroll>

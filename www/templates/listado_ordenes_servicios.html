@@ -1,0 +1,38 @@
+<ion-view view-title="Listado Actas de Obra" cache-view="false">
+	
+	<ion-nav-buttons side="primary">
+        	<a class="button button-light icon-right ion-home" href="#/"></a>
+    </ion-nav-buttons>
+
+  <ion-content>
+  <ion-list show-delete="shouldShowDelete" can-swipe="listCanSwipe">
+  	<ion-item ng-repeat="orden_servicio in ordenes_de_servicios" ng-click="changeView('{{orden_servicio.id}}')" ng-class="orden_servicio.estado == 'false' ? 'item-icon-left':'item-icon-left'">
+
+  			<i ng-class="orden_servicio.estado == 'false' ? 'icon ion-close-round':'icon ion-checkmark-round'"></i>
+	    	<h3>Acta de Obra N° {{orden_servicio.n_orden}}</h3>
+		    <p>Descripcion: {{orden_servicio.descripcion | limitTo:50}}</p>
+
+		    <ion-option-button class="button" ng-class="orden_servicio.estado == 'true' ? 'button-assertive':'button-balanced'" ng-click="borrar({{orden_servicio.id}})"> {{orden_servicio.estado == 'true' ? "Anular" : "Habilitar"}}</ion-option-button>
+
+  	</ion-item>
+   </ion-list>
+
+	  <a class="button button-block button-positive icon-right ion-plus-circled" href="#/orden_servicio/{{id_caratula}}/0">
+	  Agregar Orden de Servicio
+	</a>
+
+		  <a class="button button-block button-balanced icon-right ion-chevron-right" href="#/acta_inicio_obra/{{id_caratula}}">
+	  Ver Acta de Inicio de Obra
+	</a>
+	
+	<a class="button button-block button-positive icon-right ion-document-text" ng-click ="showPopup()">
+	  {{ data.pdf ? data.pdf : "Definir nombre de pdf" }}
+	</a>
+
+	<a class="button button-block button-positive icon-right ion-document-text" href="#/pdf/{{id_caratula}}">
+	  Generar PDF
+	</a>
+
+
+  </ion-content>
+</ion-view>

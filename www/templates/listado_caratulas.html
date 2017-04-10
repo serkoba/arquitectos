@@ -1,0 +1,23 @@
+<ion-view view-title="Listado de Caratulas" cache-view="false">
+  <ion-content>
+  <ion-list show-delete="shouldShowDelete" can-swipe="listCanSwipe">
+  	<ion-item ng-repeat="caratula in caratulas" ng-click="changeView('{{caratula.id}}')" >
+    	<h3>Expediente N° {{Entero(caratula.expediente_municipal)}}</h3>
+	    <p>Localidad: {{caratula.localidad}}</p>
+	    <p>Dirección de Obra: {{caratula.direccion_obra}}</p>
+	    
+	    <!-- Boton Editar Deshabilitado por pedido del cliente -->
+	    <!--<ion-option-button class="button-balanced" ng-click="edit('{{caratula.id}}')""> Editar </ion-option-button>-->
+
+	    <ion-option-button class="button-assertive" ng-click="borrar({{caratula.id}})"> Borrar</ion-option-button>
+  	</ion-item>
+	</ion-list>
+	  <a class="button button-block button-positive icon-right ion-chevron-right" href="#/caratula/0">
+	  Iniciar un nuevo libro
+	</a>
+
+	<a class="button button-block button-positive icon-right ion-chevron-right" href="#/datos_personales">
+	  Actualizar datos personales
+	</a>
+  </ion-content>
+</ion-view>

@@ -1,0 +1,59 @@
+<ion-view view-title="Nueva Acta de Obra">
+  <ion-nav-buttons side="primary">
+    <a class="button button-light icon-right ion-home" href="#/"></a>
+  </ion-nav-buttons>
+  <ion-content>
+    <form name="FormOrdenServicio" novalidate>
+      <div class="list">
+
+        <label class="item item-input">
+          <span>Fecha: </span>
+          <input type="date" required ng-model="FormValues.fecha2">
+        </label>
+
+        <div class="item item-divider">Libro 1 </div>
+
+        <!--<label class="item item-input">
+          <span>Libro: 1</span>
+          <input type="number" required ng-model="FormValues.libro">
+        </label>-->
+
+        <div class="item item-divider">Acta de Obra N° {{FormValues.n_orden}}</div>
+        <div class="item item-divider">Obra {{obra}}</div>
+        <div class="item item-divider">Contratista {{contratista}}</div>
+
+        <!--<label class="item item-input">
+          <span class="input-label">N° de Orden de Servicio {{FormValues.n_orden}}</span>
+        </label>-->
+
+        <!--<label class="item item-input">
+          <span class="input-label">Obra: </span>
+          <input type="text" required  disabled ng-model="FormValues.obra">
+        </label>
+
+        <label class="item item-input">
+          <span class="input-label">Contratista: </span>
+          <input type="text" required disabled ng-model="FormValues.contratista">
+        </label>-->
+
+        <label class="item item-input">
+          <span class="input-label">Descripción: </span>
+          <textarea type="text" equired ng-model="FormValues.descripcion"></textarea>
+        </label>
+
+         <br><br>
+
+        <ion-scroll ng-show="images.length" direction="x" style="height:200px; min-height: 200px; overflow: scroll; white-space: nowrap;">
+
+          <img ng-repeat="image in images" ng-src="{{urlForImage(image)}}" style="height:200px; padding: 5px 5px 5px 5px;" ng-click="showPopup(image,$index)"/>
+
+          
+        </ion-scroll>
+
+        <button class="button button-full button-positive icon-right ion-chevron-right" ng-click="addMedia()">Agregar Foto </button>
+
+        <button class="button button-full"  ng-class="FormOrdenServicio.$valid ? 'button-balanced' : 'button-assertive'" ng-click="ProcesarOrdenServicio()" ng-disabled="FormOrdenServicio.$invalid" >Guardar Cambios</button>
+      </div>
+    </form>
+  </ion-content>
+</ion-view>

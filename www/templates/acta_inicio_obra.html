@@ -1,0 +1,70 @@
+<ion-view view-title="Acta Inicio de Obra" cache-view="false">
+  <ion-nav-buttons side="primary">
+    <a class="button button-light icon-right ion-home" href="#/"></a>
+  </ion-nav-buttons>
+  <ion-content>
+    <form name="FormActaInicioObra" novalidate>
+      <div class="list">
+
+        <label class="item item-input">
+          <span>Fecha </span>
+          <input required ng-model="FormValues.fecha2" type="date"
+        calendar data-date-format="dd/mm/yyyy" validatedateformat>
+        </label>
+
+        <label class="item item-input ">
+          <span class="input-label">Obra</span>
+          <input type="text" required ng-model="FormValues.obra">
+        </label>
+        
+        <label class="item item-input ">
+          <span class="input-label">Ubicación</span>
+          <input type="text" required ng-model="FormValues.ubicacion">
+        </label>
+
+        <label class="item item-input ">
+          <span class="input-label">Circ</span>
+          <input type="text" required ng-model="FormValues.CIRC">
+        </label>
+
+        <label class="item item-input ">
+          <span class="input-label">SECC</span>
+          <input type="text" required ng-model="FormValues.SECC">
+        </label>
+
+        <label class="item item-input ">
+          <span class="input-label">MZ</span>
+          <input type="text" required ng-model="FormValues.MZ">
+        </label>
+
+        <label class="item item-input ">
+          <span class="input-label">Parcela</span>
+          <input type="text" required ng-model="FormValues.parcela">
+        </label>
+
+        <label class="item item-input ">
+          <span class="input-label">Partida</span>
+          <input type="text" required ng-model="FormValues.partida">
+        </label>
+
+        <label class="item item-input ">
+          <span class="input-label">Expediente</span>
+          <input type="text" required ng-model="FormValues.expediente">
+        </label>
+
+        <label class="item item-input ">
+          <span class="input-label">Contratista / Constructor / Representante Técnico</span>
+          <input type="text" required ng-model="FormValues.contratista">
+        </label>
+
+        <label class="item item-input ">
+          <span class="input-label">Director/ar de Obra</span>
+          <input type="text" required ng-model="FormValues.director">
+        </label>
+
+        <button class="button button-full"  ng-class="FormActaInicioObra.$valid ? 'button-balanced' : 'button-assertive'" type="submit" ng-click="ProcesarInicioObra()">Guardar</button>
+
+      </div>
+    </form>
+  </ion-content>
+</ion-view>

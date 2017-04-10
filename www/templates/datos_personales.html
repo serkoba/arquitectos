@@ -1,0 +1,55 @@
+<ion-view view-title="Formulario Datos Personales" cache-view="false">
+  <ion-nav-buttons side="primary">
+    <a class="button button-light icon-right ion-home" href="#/"></a>
+  </ion-nav-buttons>
+  <ion-content>
+    <form name="FormDatosPersonales" novalidate>
+      <div class="list">
+        <div class="item item-divider">Datos Personales</div>
+        <label class="item item-input">
+          <span class="input-label">Profesional Actuante</span>
+          <input type="text" required ng-model="FormDatosPersonalesValue.profesional">
+        </label>
+
+        <label class="item item-input">
+          <span class="input-label">N° Matricula</span>
+          <input type="number" required ng-model="FormDatosPersonalesValue.matricula">
+        </label>
+
+        <div class="item item-divider">Datos del Domicilio</div>
+
+        <label class="item item-input">
+          <span class="input-label">Calle</span>
+          <input type="text" required ng-model="FormDatosPersonalesValue.calle">
+        </label>
+
+        <label class="item item-input ">
+          <span class="input-label">Altura</span>
+          <input type="text" required ng-model="FormDatosPersonalesValue.altura">
+        </label>
+
+        <label class="item item-input ">
+          <span class="input-label">Departamento</span>
+          <input type="text" ng-model="FormDatosPersonalesValue.departamento">
+        </label>
+
+        <label class="item item-input ">
+          <span class="input-label">Localidad</span>
+          <input type="text" ng-model="FormDatosPersonalesValue.localidad">
+        </label>
+
+        <label class="item item-input ">
+          <span class="input-label">Téfono de Contacto</span>
+          <input type="text" de Contacto" required ng-model="FormDatosPersonalesValue.telefono">
+        </label>
+
+        <label class="item item-input ">
+          <span class="input-label">E-mail</span>
+          <input type="email" required ng-model="FormDatosPersonalesValue.email">
+        </label>
+        
+        <button class="button button-full"  ng-class="FormDatosPersonales.$valid ? 'button-balanced' : 'button-assertive'" ng-click="ProcesarDatosPersonales()" ng-disabled="FormDatosPersonales.$invalid" >Guardar</button>
+      </div>
+    </form>
+  </ion-content>
+</ion-view>
