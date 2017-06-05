@@ -1,7 +1,7 @@
 (function(){
   var app = angular.module('colegio_arquitectos', ['ionic','wSQL','ngCordova','colegio_arquitectos.factory','colegio_arquitectos.config','pdf']);
 
-  app.controller('LoginCtrl',function($scope,$location,$ionicNavBarDelegate,$state,$ionicPlatform, $cordovaDevice,$http,$ionicLoading,$ionicPopup){
+  app.controller('LoginCtrl',function($scope,$location,$ionicNavBarDelegate,$state,$ionicPlatform, $cordovaDevice,$http,$ionicLoading,$ionicPopup,Login){
     console.log("____LOGIN_____");
     $ionicNavBarDelegate.showBackButton(false);
     $scope.FormLoginValue = [];
@@ -18,18 +18,13 @@
       $location.path('/datos_personales');
     }
 
+    if(datos_personales){
+      $scope.FormLoginValue.email = window.localStorage.getItem("email");  
+    }
+
     $scope.ProcesarLogin = function(){
       console.log("___ProcesarLogin___");
 
-      var datos = {
-        "email":$scope.FormLoginValue.email.toLowerCase(),
-        "codigo":$scope.FormLoginValue.codigo
-      }
-      
-      localStorage.setItem("codigo",datos.codigo);  
-      localStorage.setItem("email",datos.email);  
-
-      /* REMOTE LOGIN */
       $ionicLoading.show({
         content: 'Conectando',
         animation: 'fade-in',
@@ -38,44 +33,27 @@
         showDelay: 0
       });
 
-      $http({
-        method: 'POST',
-        url: 'http://www.librodeobra.com.ar/login.php',
-        data: datos,
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-      }).then(function successCallback(response) {
-          
-          $ionicLoading.hide();
-          
-          if(response.data.reg){
-            localStorage.setItem("reg",true);  
-            localStorage.setItem("seed",response.data.seed);
-            $location.path('/datos_personales');
-          }else{
-            console.log("_______ ERROR LOGIN 0________");
-            localStorage.setItem("reg",false); 
+      localStorage.setItem("codigo",$scope.FormLoginValue.codigo);  
+      localStorage.setItem("email",$scope.FormLoginValue.email.toLowerCase());  
+      
 
+      Login.getLogin("Login 0")
+        .then(function (response) {
+            console.log(response);
+            $ionicLoading.hide();
+            /* REMOTE LOGIN */
+            if(response.login){
+              $location.path('/listado_caratulas');
+            }
             
-             var alertPopup = $ionicPopup.alert({
-               title: 'Error de sesión',
-               template: response.data.mensaje
-             });
-
-             alertPopup.then(function(res) {
-               console.log(response);
-             });
-           };
-
-          
-        }, function errorCallback(response) {
-          console.log(response);
+        }, function (error) {
+            console.log(error);
         });
-
-
     }
   });
 
-  app.controller('ListadoCaratulasCtrl',function($scope,$location,wSQL,$ionicNavBarDelegate,$state,$http){
+ app.controller('ListadoCaratulasCtrl',function($scope,$location,wSQL,$ionicNavBarDelegate,$state,$http,$ionicPopup,$ionicLoading){
+    console.log("ListadoCaratulasCtrl");
     $ionicNavBarDelegate.showBackButton(false);
     $scope.shouldShowDelete = false;
     $scope.listCanSwipe = true
@@ -85,27 +63,54 @@
     $scope.codigo = localStorage.getItem("codigo");
     $scope.seed = localStorage.getItem("seed");
 
-    if($scope.seed == null || $scope.codigo == null || $scope.email == null){
-      console.log("___ERROR LOGIN 1_____");
+    var reg = eval(window.localStorage.getItem("reg"));
+
+    if($scope.seed == null || $scope.codigo == null || $scope.email == null || !reg){
       localStorage.setItem("reg",false);  
       $location.path('/login');
     }
+
+    var login = {
+      "email" : $scope.email,
+      "codigo" : $scope.codigo,
+      "seed" : $scope.seed,
+    }    
+
+    
+
+    $http({
+        method: 'POST',
+        url: 'http://www.librodeobra.com.ar/login.php',
+        data: login,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+      }).then(function successCallback(response) {
+          if(response.data.reg){
+            localStorage.setItem("reg",true);  
+            $scope.seed = response.data.seed;
+            localStorage.setItem("seed",response.data.seed);
+          }else{
+            console.log("_______ ERROR LOGIN 1________");
+            localStorage.setItem("reg",false); 
+          };
+        }, function errorCallback(response) {
+          console.log(response);
+        });
 
      wSQL.select("*")
         .from("caratulas")
         .query()
         .then(function(d){
-            $scope.caratulas = d;
-            
+
+          for (var i = d.length - 1; i >= 0; i--) {
+            $scope.caratulas.push(d[i]);
+          }
+
             var datos = {
               "email":$scope.email,
               "codigo":$scope.codigo,
               "seed":$scope.seed,
               "caratulas": d
             }
-
-            console.log("___DATOS____");
-            console.log(JSON.stringify(datos));
 
             $http({
               method: 'POST',
@@ -133,9 +138,6 @@
           .from("actas_inicio_obra")
           .query()
           .then(function(d){
-
-            console.log(d);
-
              var datos = {
               "email":$scope.email,
               "codigo":$scope.codigo,
@@ -149,22 +151,210 @@
               data: datos,
               headers: {'Content-Type': 'application/x-www-form-urlencoded'}
             }).then(function successCallback(response) {
-
-              //console.log("____RESPUESTA DE ListadoCaratulasCtrl 2 ___");
-              //console.log(JSON.stringify(response));
-
+              $ionicLoading.hide();
               if(response.data.e=="1"){
                 console.log("_______ ERROR LOGIN 6________");
                 localStorage.setItem("reg",false);  
                 $location.path('/login');
               }
-
-              console.log(response);
+              
             }, function errorCallback(response) {
               console.log(response);
             });
 
           });
+
+
+   $scope.Sincronizar  = function(fuente){
+
+      $ionicLoading.show({
+        content: 'Sincronizando',
+        animation: 'fade-in',
+        showDelay: 0
+      });
+
+      $scope.email = localStorage.getItem("email");
+      $scope.codigo = localStorage.getItem("codigo");
+      $scope.seed = localStorage.getItem("seed");
+
+      var login = {
+        "email" : $scope.email,
+        "codigo" : $scope.codigo,
+        "seed" : $scope.seed,
+      }
+
+     // GET CARATULAS NUEVAS
+      $http({
+        method: 'POST',
+        data: login,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        url: 'http://www.librodeobra.com.ar/get_caratulas.php',
+      }).then(function successCallback(response) {
+
+          if(response.data.e=="0"){
+            var caratulas_nuevas = [];
+            for (var i = response.data.caratulas.length - 1; i >= 0; i--) {
+              caratulas_nuevas.push({
+                "direccion_obra":response.data.caratulas[i].direccion,
+                "duracion":response.data.caratulas[i].duracion,
+                "expdiente_capba":response.data.caratulas[i].exp_capba,
+                "expediente_municipal":response.data.caratulas[i].exp_municipal,
+                "id":response.data.caratulas[i].id_caratula,
+                "localidad_obra":response.data.caratulas[i].localidad_obra,
+                "municipalidad_obra":response.data.caratulas[i].municipalidad,
+                "pdf":response.data.caratulas[i].pdf,
+                "superficie":response.data.caratulas[i].sup_cubierta,
+                "superficie_semi":response.data.caratulas[i].sub_semi,
+                "tarea":response.data.caratulas[i].tipo_profesional,
+
+              })
+            }
+
+            wSQL.batch_insert_on_duplicate_key_update("caratulas",caratulas_nuevas,["id"])
+              .then(function(result){
+                  console.log("result bach");
+                  $state.reload();
+              });
+
+          }else{
+            console.log("ERROR LOGIN");
+            localStorage.setItem("reg",false);  
+            $location.path('/login');
+
+          }
+
+        }, function errorCallback(response) {
+          console.log("errorCallback");
+          console.log(response);
+            wSQL.select("*")
+              .from("datos_personales")
+              .query()
+              .then(function(d){
+                if(d.length>0){
+                  $scope.FormDatosPersonalesValue = d[0];
+                }
+              });
+        });
+
+      // GET ORDENES
+      $http({
+        method: 'POST',
+        data: login,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        url: 'http://www.librodeobra.com.ar/get_ordenes_de_servicio.php',
+      }).then(function successCallback(response) {
+          
+          if(response.data.e=="0"){
+            var ordenes_servidor = response.data.ordenes;
+
+            for (var j = ordenes_servidor.length - 1; j >= 0; j--) {
+
+                var f = ordenes_servidor[j].fecha.split("-");
+                var fecha = new Date(f[0], f[1] - 1, f[2]);
+
+                var t = 'SELECT fotos FROM ordenes_de_servicios WHERE id = '+ordenes_servidor[j].id_orden_servicio;
+                $scope.InsertarOrden(t,[ordenes_servidor[j],fecha,j]);
+              }
+            }
+
+            
+
+        }, function errorCallback(response) {
+          console.log("errorCallback");
+          console.log(response);
+        });
+
+       // GET ACTAS
+      $http({
+        method: 'POST',
+        data: login,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        url: 'http://www.librodeobra.com.ar/get_actas.php',
+      }).then(function successCallback(response) {
+          console.log(response); 
+          if(response.data.e=="0"){
+            var actas_nuevas = [];
+            for (var i = response.data.actas.length - 1; i >= 0; i--) {
+              var f = new Date(response.data.actas[i].fecha).toString();
+              actas_nuevas.push({
+                "fecha":f,
+                "obra":response.data.actas[i].obra,
+                "ubicacion":response.data.actas[i].ubicacion,
+                "CIRC":response.data.actas[i].circ,
+                "SECC":response.data.actas[i].secc,
+                "MZ":response.data.actas[i].mz,
+                "parcela":response.data.actas[i].parcela,
+                "partida":response.data.actas[i].partida,
+                "expediente":response.data.actas[i].expediente,
+                "contratista":response.data.actas[i].contratista,
+                "director":response.data.actas[i].director,
+                "id":response.data.actas[i].id_caratula,
+
+              })
+            }
+
+            wSQL.batch_insert_on_duplicate_key_update("actas_inicio_obra",actas_nuevas,["id"])
+              .then(function(result){
+                  console.log("result bach");
+              });
+
+          }else{
+            console.log("ERROR LOGIN");
+            localStorage.setItem("reg",false);  
+            $location.path('/login');
+
+          }
+
+        }, function errorCallback(response) {
+          console.log("errorCallback");
+          console.log(response);
+            wSQL.select("*")
+              .from("datos_personales")
+              .query()
+              .then(function(d){
+                if(d.length>0){
+                  $scope.FormDatosPersonalesValue = d[0];
+                }
+              });
+        });
+
+    }
+    
+    $scope.InsertarOrden = function(t,p){
+      wSQL.query(t,[],p)
+         .then(function(result){
+
+            var fotos;
+
+            if(result.length==0){
+              fotos = " ";
+            }else{
+              fotos = result[0].fotos;
+            }
+
+            fotos = "\""+fotos+"\"";
+
+            var q = 'INSERT OR REPLACE INTO ordenes_de_servicios VALUES ('+p[0].id+', "'+p[0].estado+'",1,'+p[0].id_caratula+',"'+p[1]+'","'+p[0].descripcion+'",'+fotos+')';
+
+            wSQL.query(q)
+           .then(function(result,error){
+                console.log(result);
+            }, function(error){
+                console.log(error);
+            });
+
+          }, function(error){
+              console.log(error);
+          });
+
+    }
+
+    //END SINCRONIZAR
+
+    $scope.logout = function(){
+      localStorage.setItem("reg",false);  
+      $location.path('/login');
+    }
 
     $scope.Entero = function(numero){
           return parseInt(numero);
@@ -181,18 +371,64 @@
     }
   });
 
-  app.controller('DatosPersonalesCtrl',function($scope,$location,wSQL,$ionicNavBarDelegate,$http){
+  app.controller('DatosPersonalesCtrl',function($scope,$location,wSQL,$ionicNavBarDelegate,$http,$ionicLoading){
+    
+    $ionicLoading.show({
+        content: 'Conectando',
+        animation: 'fade-in',
+        showBackdrop: true,
+        maxWidth: 200,
+        showDelay: 0
+      });
+
     $ionicNavBarDelegate.showBackButton(false);
     $scope.FormDatosPersonalesValue = [];
 
-     wSQL.select("*")
-        .from("datos_personales")
-        .query()
-        .then(function(d){
-          if(d.length>0){
-            $scope.FormDatosPersonalesValue = d[0];
-          }
-        });
+    var datos = {
+      email:localStorage.getItem("email"),
+      codigo:localStorage.getItem("codigo"),
+      seed:localStorage.getItem("seed"),
+    }
+
+    $http({
+      method: 'POST',
+      data: datos,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      url: 'http://www.librodeobra.com.ar/get_datos_personales.php',
+    }).then(function successCallback(response) {
+        $ionicLoading.hide();
+
+        if(response.data.e=="0"){
+          var data = response.data.mensaje;
+          $scope.FormDatosPersonalesValue.profesional = data.profesional_actuante;
+          $scope.FormDatosPersonalesValue.matricula = parseInt(data.matricula);
+          $scope.FormDatosPersonalesValue.altura = data.altura;
+          $scope.FormDatosPersonalesValue.calle = data.calle;
+          $scope.FormDatosPersonalesValue.codigo = data.codigo;
+          $scope.FormDatosPersonalesValue.departamento = data.departamento;
+          $scope.FormDatosPersonalesValue.localidad = data.localidad;
+          $scope.FormDatosPersonalesValue.email = data.email;
+          $scope.FormDatosPersonalesValue.telefono = data.telefono;
+
+        }else{
+          console.log("ERROR LOGIN");
+          localStorage.setItem("reg",false); 
+          $location.path('/login');
+        }
+
+      }, function errorCallback(response) {
+        console.log("errorCallback");
+        console.log(response);
+          wSQL.select("*")
+            .from("datos_personales")
+            .query()
+            .then(function(d){
+              if(d.length>0){
+                $scope.FormDatosPersonalesValue = d[0];
+              }
+            });
+      });
+
 
     $scope.ProcesarDatosPersonales = function() {
       $scope.FormDatosPersonalesValue["id"] = 1;
@@ -225,7 +461,14 @@
                 email:localStorage.getItem("email"),
                 codigo:localStorage.getItem("codigo"),
                 seed:localStorage.getItem("seed"),
-                datos_personales: $scope.FormDatosPersonalesValue
+                altura:$scope.FormDatosPersonalesValue.altura,
+                calle:$scope.FormDatosPersonalesValue.calle,
+                codigo:$scope.FormDatosPersonalesValue.codigo,
+                departamento:$scope.FormDatosPersonalesValue.departamento,
+                localidad:$scope.FormDatosPersonalesValue.localidad,
+                matricula:$scope.FormDatosPersonalesValue.matricula,
+                profesional:$scope.FormDatosPersonalesValue.profesional,
+                telefono:$scope.FormDatosPersonalesValue.telefono
               }
               
 
@@ -440,9 +683,11 @@
     wSQL.select()
           .from("ordenes_de_servicios")
           .where("id_caratula", $scope.id_caratula)
+          .order_by('id')
           .query()
           .then(function(d){
-              $scope.ordenes_de_servicios = d;
+            
+            $scope.ordenes_de_servicios = d;
 
 
             var datos = {
@@ -462,8 +707,8 @@
               data: datos,
               headers: {'Content-Type': 'application/x-www-form-urlencoded'}
             }).then(function successCallback(response) {
-              //console.log("____RESPUESTA DE ListadoOrdenesServiciosCtrl ___");
-              //console.log(JSON.stringify(response));
+              console.log("____RESPUESTA DE ListadoOrdenesServiciosCtrl ___");
+              console.log(JSON.stringify(response));
               if(response.data.e=="1"){
                 console.log("_______ ERROR LOGIN 4________");
                 localStorage.setItem("reg",false);  

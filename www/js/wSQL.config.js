@@ -49,7 +49,7 @@ angular.module('wSQL.config', [])
          "ordenes_de_servicios"    :   [
             "id INTEGER PRIMARY KEY AUTOINCREMENT",
             "estado VARCHAR(255) NULL DEFAULT 'true'",
-            "n_orden INTEGER NOT NULL",
+            "n_orden INTEGER NOT NULL", // numero de orden de servicio. Dentro de cada caratula, orden 1, 2,3
             "id_caratula INTEGER NOT NULL",
             /*"libro INTEGER NOT NULL",*/
             "fecha VARCHAR(255) NOT NULL",

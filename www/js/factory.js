@@ -1,6 +1,53 @@
 //https://devdactic.com/complete-image-guide-ionic/
 var app = angular.module('colegio_arquitectos.factory', []);
 
+
+app.factory('Login', ['$http', function($http) {
+  
+  var dataFactory = {};
+
+  dataFactory.getLogin = function (descripcion) {
+    
+
+
+    var d = {
+      "email" : localStorage.getItem("email"),
+      "codigo" : localStorage.getItem("codigo"),
+    }
+
+    var l = false;
+    
+    console.log(d);
+
+    return $http({
+        method: 'POST',
+        url: 'http://www.librodeobra.com.ar/login.php',
+        data: d,
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+      }).then(function successCallback(response) {
+          console.log(response);
+          if(response.data.e == "0"){
+            localStorage.setItem("reg",true);  
+            localStorage.setItem("codigo",d.codigo);  
+            localStorage.setItem("seed",response.data.seed);
+            l = true;
+          }else{
+            console.log("_______ ERROR LOGIN________");
+            localStorage.setItem("reg",false); 
+          };
+
+          return {
+            "login": l,
+            "descripcion": descripcion
+          }
+
+        });
+    };
+
+     return dataFactory;
+
+}]);
+
 app.factory('FileService', function() {
 	var images;
 	var IMAGE_STORAGE_KEY = 'fotos';

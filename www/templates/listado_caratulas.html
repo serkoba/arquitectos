@@ -1,9 +1,14 @@
 <ion-view view-title="Listado de Caratulas" cache-view="false">
+
+	<ion-nav-buttons side="right">
+      <button class="button button-balanced icon-right"  ng-click="logout()"><i class="icon ion-log-out"></i></button>
+   </ion-nav-buttons>
+
   <ion-content>
   <ion-list show-delete="shouldShowDelete" can-swipe="listCanSwipe">
   	<ion-item ng-repeat="caratula in caratulas" ng-click="changeView('{{caratula.id}}')" >
     	<h3>Expediente N° {{Entero(caratula.expediente_municipal)}}</h3>
-	    <p>Localidad: {{caratula.localidad}}</p>
+	    <p>Localidad: {{caratula.localidad_obra}}</p>
 	    <p>Dirección de Obra: {{caratula.direccion_obra}}</p>
 	    
 	    <!-- Boton Editar Deshabilitado por pedido del cliente -->
@@ -19,5 +24,11 @@
 	<a class="button button-block button-positive icon-right ion-chevron-right" href="#/datos_personales">
 	  Actualizar datos personales
 	</a>
+
+	<a class="button button-block button-balanced icon-left ion-loop" style="background-color: #33cd5f;" ng-click="Sincronizar('click')">
+		<ion-icon name="home"></ion-icon>
+	  Sincronizar con el Servidor
+	</a>
+
   </ion-content>
 </ion-view>

@@ -1,5 +1,11 @@
-<ion-view view-title="Formulario Datos Personales" cache-view="false">
-  <ion-content>
+<ion-view view-title="Iniciar Sesión" cache-view="false">
+  <ion-content style="
+ background: url(img/1.jpg) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+">
     <form name="FormLogin" novalidate>
       <div class="list">
         <div class="item item-divider">Requiere conexión a internet</div>
@@ -14,7 +20,7 @@
           <input type="text" required ng-model="FormLoginValue.codigo">
         </label>
         
-        <button class="button button-full"  ng-class="FormLogin.$valid ? 'button-balanced' : 'button-assertive'" ng-click="ProcesarLogin()" ng-disabled="FormLogin.$invalid" >Guardar</button>
+        <button class="button button-full"  ng-class="FormLogin.$valid ? 'button-balanced' : 'button-assertive'" ng-click="ProcesarLogin()" ng-disabled="FormLogin.$invalid" >Iniciar Sesión</button>
       </div>
     </form>
   </ion-content>
