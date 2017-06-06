@@ -56,7 +56,12 @@ app.factory('FileService', function() {
 		var img = window.localStorage.getItem(IMAGE_STORAGE_KEY);
 
 		if (img) {
-		  images = JSON.parse(img);
+      try{
+        images = JSON.parse(img);  
+      }catch(err) {
+          images = [];
+      }
+		  
 		} else {
 		  images = [];
 		}

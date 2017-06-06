@@ -17,9 +17,6 @@
     <preference name="android-minSdkVersion" value="16" />
     <preference name="BackupWebStorage" value="none" />
     <preference name="SplashScreen" value="screen" />
-    <feature name="StatusBar">
-        <param name="ios-package" onload="true" value="CDVStatusBar" />
-    </feature>
     <gap:plugin name="cordova-plugin-datepicker" source="npm" />
     <gap:plugin name="org.apache.cordova.camera" />
     <gap:config-file parent="/manifest" platform="android">

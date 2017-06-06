@@ -1,16 +1,30 @@
 (function(){
   var app = angular.module('colegio_arquitectos', ['ionic','wSQL','ngCordova','colegio_arquitectos.factory','colegio_arquitectos.config','pdf']);
 
-  app.controller('LoginCtrl',function($scope,$location,$ionicNavBarDelegate,$state,$ionicPlatform, $cordovaDevice,$http,$ionicLoading,$ionicPopup,Login){
+  app.controller('LoginCtrl',function($scope,$location,$ionicNavBarDelegate,$state,$ionicPlatform, $cordovaDevice,$http,$ionicLoading,$ionicPopup,Login,wSQL){
     console.log("____LOGIN_____");
     $ionicNavBarDelegate.showBackButton(false);
     $scope.FormLoginValue = [];
     var reg = eval(window.localStorage.getItem("reg"));
     var datos_personales = eval(window.localStorage.getItem("datos_personales"));
-
+    
+    
     if(reg && datos_personales){
       // Datos Personales Fueron Guardados
-      $location.path('/listado_caratulas');
+        console.log("___BuscarDatosPersonales____");
+        wSQL.select('*')
+          .from("datos_personales")
+          .where("id", 1)
+          .row()
+          .then(function(d){
+            console.log(JSON.stringify(d));
+            console.log(d.length);
+            if(d[0]== null || d.length==0){
+              $location.path('/login');
+            }else{
+              $location.path('/listado_caratulas');
+            }     
+          });
     }
 
     if(reg && !datos_personales){
@@ -433,6 +447,8 @@
     $scope.ProcesarDatosPersonales = function() {
       $scope.FormDatosPersonalesValue["id"] = 1;
       $scope.FormDatosPersonalesValue.matricula = parseInt($scope.FormDatosPersonalesValue.matricula);
+      $scope.FormDatosPersonalesValue.altura = parseInt($scope.FormDatosPersonalesValue.altura);
+      delete $scope.FormDatosPersonalesValue['codigo'];
 
       wSQL.select('*')
           .from("datos_personales")
@@ -835,6 +851,7 @@
   });
 
   app.controller('PDFCtrl',function($scope,wSQL,$location,$state,$cordovaFile,$ionicPlatform,$cordovaDevice,$cordovaFileOpener2,$cordovaSocialSharing,$ionicLoading){
+    console.log("___PDFCtrl____");
     $scope.id_caratula = parseInt($state.params.id_caratula);
     var carpeta_pdf = cordova.file.externalDataDirectory;
     var carpeta_imagenes = cordova.file.dataDirectory;
@@ -869,17 +886,20 @@
           });
 
     function BuscarDatosPersonales(){
+      console.log("___BuscarDatosPersonales____");
       wSQL.select('*')
           .from("datos_personales")
           .where("id", 1)
           .row()
           .then(function(d){
+            console.log(JSON.stringify(d));
             datos_personales = d[0];
             BuscarLibro();
           });
     }
 
     function BuscarLibro(){
+      console.log("___BuscarLibro____");
       wSQL.select()
           .from("caratulas")
           .where("id", $scope.id_caratula)
@@ -905,12 +925,20 @@
             console.log("____ ORDENES ESTADO______");
             numero_ordenes_de_servicios = d.length;
             for (var i = 0; i<d.length; i++) {
-            //for (var i = d.length - 1; i >= 0; i--) {
-                var set_fotos = [];
-                if(d[i].fotos != ""){
-                  /* Hay fotos */
-                  var fotos = JSON.parse(d[i].fotos);
 
+                var set_fotos = [];
+                var fotos;
+
+                try {
+                    fotos = JSON.parse(d[i].fotos);
+                  } catch (e) {
+                    fotos = [];
+                    console.log("Foto vacia");
+                  }
+
+                console.log("Cantidad de fotos: ",fotos.length);
+                if(fotos.length>0){
+                  /* Hay fotos */
                   for (var j = fotos.length - 1; j >= 0; j--) {
                     
                     var archivo = carpeta_imagenes+fotos[j];
@@ -1107,6 +1135,7 @@
 
     function createPDF(caratula,libro,datos_personales,ordenes){
       console.log("______createPDF_______");
+      console.log(JSON.stringify(datos_personales));
       //https://github.com/bpampuch/pdfmake
       //https://jeffleus.github.io/ionic-pdf/www/#/
       console.log(caratula.tarea);
