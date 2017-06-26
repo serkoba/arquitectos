@@ -17,8 +17,7 @@
           .where("id", 1)
           .row()
           .then(function(d){
-            console.log(JSON.stringify(d));
-            console.log(d.length);
+
             if(d[0]== null || d.length==0){
               $location.path('/login');
             }else{
@@ -53,7 +52,6 @@
 
       Login.getLogin("Login 0")
         .then(function (response) {
-            console.log(response);
             $ionicLoading.hide();
             /* REMOTE LOGIN */
             if(response.login){
@@ -78,6 +76,49 @@
     $scope.seed = localStorage.getItem("seed");
 
     var reg = eval(window.localStorage.getItem("reg"));
+
+    var check_duplicados = window.localStorage.getItem("check_duplicados");
+    console.log("check_duplicados ",check_duplicados);
+
+    if(check_duplicados==null){
+        console.log("BOORAR DUPLICADOS!");
+       wSQL.select("*")
+        .from("ordenes_de_servicios")
+        .query()
+        .then(function(d){
+          for (i = 0; i < d.length; i++) { 
+            for (j = 0; j < d.length; j++) { 
+              
+              if(!/[a-zA-Z]/.test(d[j].fotos)){
+                d[j].fotos = "";
+              }
+
+              if(!/[a-zA-Z]/.test(d[i].fotos)){
+                d[i].fotos = "";
+              }
+
+              if(d[j].descripcion == d[i].descripcion && d[j].fecha == d[i].fecha && d[j].fotos == d[i].fotos && d[j].id_caratula == d[i].id_caratula && d[j].id != d[i].id ){
+                if(d[i].id>d[j].id){
+                  wSQL.delete("ordenes_de_servicios")
+                    .where("id", d[j].id)
+                    .query()
+                    .then(function(data){});
+                }else{
+                  wSQL.delete("ordenes_de_servicios")
+                    .where("id", d[i].id)
+                    .query()
+                    .then(function(data){});
+                }
+              }
+
+            }
+              
+          }
+          //window.localStorage.setItem("check_duplicados",true);
+
+        });
+    }
+
 
     if($scope.seed == null || $scope.codigo == null || $scope.email == null || !reg){
       localStorage.setItem("reg",false);  
@@ -204,7 +245,6 @@
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         url: 'http://www.librodeobra.com.ar/get_caratulas.php',
       }).then(function successCallback(response) {
-
           if(response.data.e=="0"){
             var caratulas_nuevas = [];
             for (var i = response.data.caratulas.length - 1; i >= 0; i--) {
@@ -257,7 +297,8 @@
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         url: 'http://www.librodeobra.com.ar/get_ordenes_de_servicio.php',
       }).then(function successCallback(response) {
-          
+          console.log("GET ORDENES");
+          console.log(response);
           if(response.data.e=="0"){
             var ordenes_servidor = response.data.ordenes;
 
@@ -274,8 +315,8 @@
             
 
         }, function errorCallback(response) {
-          console.log("errorCallback");
-          console.log(response);
+            console.log("errorCallback");
+           console.log(JSON.stringify(response));
         });
 
        // GET ACTAS
@@ -285,7 +326,6 @@
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         url: 'http://www.librodeobra.com.ar/get_actas.php',
       }).then(function successCallback(response) {
-          console.log(response); 
           if(response.data.e=="0"){
             var actas_nuevas = [];
             for (var i = response.data.actas.length - 1; i >= 0; i--) {
@@ -314,6 +354,7 @@
 
           }else{
             console.log("ERROR LOGIN");
+            console.log(JSON.stringify(response));
             localStorage.setItem("reg",false);  
             $location.path('/login');
 
@@ -341,24 +382,49 @@
             var fotos;
 
             if(result.length==0){
-              fotos = " ";
+              fotos = "";
             }else{
-              fotos = result[0].fotos;
+              if(!/[a-zA-Z]/.test(result[0].fotos)){
+                fotos = "";
+              }else{
+                fotos = result[0].fotos;  
+              }
+
+              
+              
             }
 
             fotos = "\""+fotos+"\"";
 
-            var q = 'INSERT OR REPLACE INTO ordenes_de_servicios VALUES ('+p[0].id+', "'+p[0].estado+'",1,'+p[0].id_caratula+',"'+p[1]+'","'+p[0].descripcion+'",'+fotos+')';
+            //var q = 'INSERT OR REPLACE INTO ordenes_de_servicios VALUES ('+p[0].id+', "'+p[0].estado+'",1,'+p[0].id_caratula+',"'+p[1]+'","'+p[0].descripcion+'",'+fotos+')';
+            //console.log("INSER OR REPLACE ORDENES DE SERVICIO");
 
-            wSQL.query(q)
+             wSQL.insert_on_duplicate_key_update("ordenes_de_servicios",
+                // data
+                {
+                    "id": p[0].id_orden_servicio,
+                    "estado":p[0].estado,
+                    "n_orden":1,
+                    "id_caratula":p[0].id_caratula,
+                    "fecha":p[1],
+                    "descripcion":p[0].descripcion,
+                    "fotos":fotos
+        
+                },
+                // unique_keys
+                ["id","id_caratula","fecha"]
+            ).then(function(result){});
+
+
+            /*wSQL.query(q)
            .then(function(result,error){
-                console.log(result);
+                console.log(JSON.stringify(result));
             }, function(error){
-                console.log(error);
-            });
+                console.log(JSON.stringify(error));
+            });*/
 
           }, function(error){
-              console.log(error);
+              console.log(JSON.stringify(error));
           });
 
     }
@@ -715,7 +781,8 @@
             }
 
             console.log("___DATOS____");
-            console.log(JSON.stringify(datos));
+            //console.log(JSON.stringify(datos));
+            console.log(datos);
 
             $http({
               method: 'POST',
@@ -724,7 +791,7 @@
               headers: {'Content-Type': 'application/x-www-form-urlencoded'}
             }).then(function successCallback(response) {
               console.log("____RESPUESTA DE ListadoOrdenesServiciosCtrl ___");
-              console.log(JSON.stringify(response));
+              //console.log(JSON.stringify(response));
               if(response.data.e=="1"){
                 console.log("_______ ERROR LOGIN 4________");
                 localStorage.setItem("reg",false);  
@@ -892,8 +959,10 @@
           .where("id", 1)
           .row()
           .then(function(d){
-            console.log(JSON.stringify(d));
             datos_personales = d[0];
+            if(datos_personales.length==0){
+              $location.path('/datos_personales');
+            }
             BuscarLibro();
           });
     }
@@ -922,7 +991,6 @@
           .and("estado", 'true')
           .query()
           .then(function(d){
-            console.log("____ ORDENES ESTADO______");
             numero_ordenes_de_servicios = d.length;
             for (var i = 0; i<d.length; i++) {
 
@@ -933,12 +1001,12 @@
                     fotos = JSON.parse(d[i].fotos);
                   } catch (e) {
                     fotos = [];
-                    console.log("Foto vacia");
                   }
 
                 console.log("Cantidad de fotos: ",fotos.length);
                 if(fotos.length>0){
                   /* Hay fotos */
+
                   for (var j = fotos.length - 1; j >= 0; j--) {
                     
                     var archivo = carpeta_imagenes+fotos[j];
@@ -1138,7 +1206,7 @@
       console.log(JSON.stringify(datos_personales));
       //https://github.com/bpampuch/pdfmake
       //https://jeffleus.github.io/ionic-pdf/www/#/
-      console.log(caratula.tarea);
+      
       var campos = caratula.tarea.toString();
       var tarea = "";
       var n = campos.toString().length;
@@ -1168,8 +1236,6 @@
         }
       }
       
-      console.log("TAREA PROFESIONAL!");
-      console.log(tarea);
       var docDefinition = {
         pageSize: 'A4',
         //METADATA
@@ -1522,8 +1588,6 @@
 
       $scope.showPopup = function(imagen,id) {        
         var url = cordova.file.dataDirectory + imagen; 
-        console.log(imagen);
-        console.log(url);
 
         // An elaborate, custom popup
         var myPopup = $ionicPopup.show({
@@ -1573,7 +1637,9 @@
         $scope.FormValues.fotos = window.localStorage.getItem("fotos") || "";
 
         delete $scope.FormValues.fecha2;
+        console.log("___ProcesarOrdenServicio___");
         if($scope.exist){
+          console.log("UPDATE ORDEN DE SERVICIO");
           wSQL.update("ordenes_de_servicios", $scope.FormValues)
              .where("id", $scope.id_orden)
               .query()
@@ -1581,6 +1647,7 @@
                   $location.path('/listado_ordenes_servicios/'+$scope.id_caratula);
               })
         }else{
+          console.log("INSERT ORDEN DE SERVICIO");
           wSQL.insert("ordenes_de_servicios", $scope.FormValues)
             .then(function(insert){
               if(insert !== null && typeof insert === 'object'){
@@ -1593,15 +1660,16 @@
         var lista = window.localStorage.getItem("fotos_para_eliminar");
         if (lista) {
           lista_de_fotos = JSON.parse(lista);
-
-          for (var i = lista_de_fotos.length - 1; i >= 0; i--) {
-            $cordovaFile.removeFile(lista_de_fotos[i]).then(function(success){
-              console.log("__FOTO BORRAR___");
-              console.log(lista_de_fotos[i]);
-            },function(error){
-              console.log("__ERROR BORRANDO FOTOS");
-            });
-            
+          if(lista_de_fotos!=null){
+            for (var i = lista_de_fotos.length - 1; i >= 0; i--) {
+              $cordovaFile.removeFile(lista_de_fotos[i]).then(function(success){
+                console.log("__FOTO BORRAR___");
+                console.log(lista_de_fotos[i]);
+              },function(error){
+                console.log("__ERROR BORRANDO FOTOS");
+              });
+              
+            }
           }
         }
       }
